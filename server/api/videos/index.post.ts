@@ -6,6 +6,7 @@ import { Video } from '~/server/models';
 import { IVideo } from '~/types/video';
 import { errorHandler } from '~/server/utils/error-handler';
 import { decodedAuthorization } from '../../utils/decode-token';
+import WebSocket, { WebSocketServer } from "ws"
 
 export default defineEventHandler(async (event) => {
     const { files: { file: [{ filepath, mimetype }] } } = await readFiles(event, {
@@ -34,6 +35,19 @@ export default defineEventHandler(async (event) => {
         }).catch((err) => {
             console.log(err);
             fs.unlinkSync(newPath);
+        });
+
+        const ws = new WebSocket('ws://localhost:8765');
+        let message = "Hola desde el servidor";
+
+        ws.on('open', function open() {
+            console.log('Conexión establecida');
+            const sendData = JSON.stringify(['generar', [user.ecode, newPath]]);
+            ws.send(sendData);
+        });
+
+        ws.on('close', function close() {
+            console.log('Conexión cerrada');
         });
 
         return { success: true }

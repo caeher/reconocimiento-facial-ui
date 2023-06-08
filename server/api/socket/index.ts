@@ -21,7 +21,8 @@ export default defineEventHandler(async (event) => {
     const { files: { video }, fields } = await readFiles(event, {
         includeFields: true
     });
-    const { sender } = fields;
+    const { sender, clave } = fields;
+    
     const binaryVideo = readFileSync(video[0].filepath);
 
     const ws = new WebSocket('ws://localhost:8765');
@@ -29,7 +30,8 @@ export default defineEventHandler(async (event) => {
 
     ws.on('open', function open() {
         console.log('Conexión establecida');
-        ws.send(binaryVideo);
+        const sendData = JSON.stringify([clave.toString(), binaryVideo]);
+        ws.send(sendData);
     });
 
     ws.on('message', function incoming(data:any) {

@@ -24,6 +24,7 @@ const { data: files, refresh } = await useAsyncData('videos', async () => await 
     Authorization: `Bearer ${user.value.token}`
   }
 }))
+console.log(files)
 const { isOverDropZone } = useDropZone(dropZoneRef, onDrop)
 
 const handleUploadFiles = async (): Promise<void> => {
@@ -55,6 +56,16 @@ function onFileChange(event: Event) {
   }
 }
 
+async function deleteVideo (videoid:number) {
+  const { data: dataDelete, error: errorDelete} = await useAsyncData('videos', async () => await $fetch('/api/videos', {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${user.value.token}`
+    }
+  }))
+
+  console.log(dataDelete, errorDelete)
+}
 
 definePageMeta({
   layout: 'default',
